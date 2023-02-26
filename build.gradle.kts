@@ -21,12 +21,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	// Validaciones de Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	// Webflux y Reactividad
-	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	// WebSocket
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
-	// Jackson JSON
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	// Cache Spring
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 	// Serializable Json Kotlin

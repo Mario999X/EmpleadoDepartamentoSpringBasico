@@ -1,10 +1,11 @@
-package resa.mario.empleadodepartamentospring1.repositories
+package resa.mario.empleadodepartamentospring1.repositories.departamento
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
@@ -13,10 +14,10 @@ import resa.mario.empleadodepartamentospring1.models.Departamento
 private val log = KotlinLogging.logger {}
 
 @Repository
-class DepartamentosCachedRepositoryImpl
+class DepartamentoCachedRepositoryImpl
 @Autowired constructor(
-    private val repository: DepartamentosRepository
-) : DepartamentosCachedRepository {
+    private val repository: DepartamentoRepository
+) : DepartamentoCachedRepository {
 
     override suspend fun findAll(): Flow<Departamento> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo todos los departamentos" }
@@ -38,28 +39,32 @@ class DepartamentosCachedRepositoryImpl
         return@withContext repository.save(entity)
     }
 
+    // IMPORTANTE, PARA EVITAR QUE CUANDO SE ACTUALICE EL OBJETO CON UN NUEVO ID Y DEJANDO EL ANTIGUO:
+    // SE DEBERA CAMBIAR EL ID DEL ENTITY ENVIADO, EN ESTE CASO ES NULL, O BIEN HACER UN COPY DEL ELEMENTO
     @CachePut("departamentos")
     override suspend fun update(id: Long, entity: Departamento): Departamento? = withContext(Dispatchers.IO) {
         log.info { "Actualizando departamento con id: $id" }
 
-        var departamentoDB = repository.findById(id)
+        var entityDB = repository.findById(id)
 
-        if (departamentoDB != null) {
-            departamentoDB = repository.save(entity)
+        if (entityDB != null) {
+            entityDB = entity.copy(id = id)
+            entityDB = repository.save(entityDB)
         }
 
-        return@withContext departamentoDB
+        return@withContext entityDB
     }
 
+    @CacheEvict("departamentos")
     override suspend fun deleteById(id: Long): Departamento? = withContext(Dispatchers.IO) {
         log.info { "Eliminando departamento con id: $id " }
 
-        val departamentoDB = repository.findById(id)
+        val entityDB = repository.findById(id)
 
-        if (departamentoDB != null) {
-            repository.delete(departamentoDB)
+        if (entityDB != null) {
+            repository.delete(entityDB)
         }
 
-        return@withContext departamentoDB
+        return@withContext entityDB
     }
 }

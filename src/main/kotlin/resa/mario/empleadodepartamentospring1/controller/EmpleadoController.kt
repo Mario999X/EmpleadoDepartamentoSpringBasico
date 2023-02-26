@@ -8,24 +8,22 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import resa.mario.empleadodepartamentospring1.config.APIConfig
-import resa.mario.empleadodepartamentospring1.models.Departamento
-import resa.mario.empleadodepartamentospring1.services.departamento.DepartamentosServiceImpl
-
-// IMPORTANTE, PARA SPRING SECURITY -> LOS METODOS DE LOS CONTROLADORES EN PUBLICO
+import resa.mario.empleadodepartamentospring1.models.Empleado
+import resa.mario.empleadodepartamentospring1.services.empleado.EmpleadoServiceImpl
 
 @RestController
-@RequestMapping(APIConfig.API_PATH + "/departamentos")
-class DepartamentoController
+@RequestMapping(APIConfig.API_PATH + "/empleados")
+class EmpleadoController
 @Autowired constructor(
-    private val service: DepartamentosServiceImpl
+    private val service: EmpleadoServiceImpl
 ) {
     @GetMapping("")
-    suspend fun findAll(): ResponseEntity<List<Departamento>> {
+    suspend fun findAll(): ResponseEntity<List<Empleado>> {
         return ResponseEntity.ok(service.findAll().toList())
     }
 
     @GetMapping("id/{id}")
-    suspend fun findById(@PathVariable id: String): ResponseEntity<Departamento> {
+    suspend fun findById(@PathVariable id: String): ResponseEntity<Empleado> {
         try {
             val entity = service.findById(id.toLong())
             return ResponseEntity.ok(entity)
@@ -37,15 +35,15 @@ class DepartamentoController
     }
 
     @PostMapping("create")
-    suspend fun create(@Valid @RequestBody entity: Departamento): ResponseEntity<Departamento> {
+    suspend fun create(@Valid @RequestBody entity: Empleado): ResponseEntity<Empleado> {
         return ResponseEntity.ok(service.save(entity))
     }
 
     @PutMapping("update/{id}")
     suspend fun update(
         @PathVariable id: String,
-        @Valid @RequestBody entity: Departamento
-    ): ResponseEntity<Departamento> {
+        @Valid @RequestBody entity: Empleado
+    ): ResponseEntity<Empleado> {
         try {
             return ResponseEntity.ok(service.update(id.toLong(), entity))
         } catch (e: Exception) {
@@ -54,7 +52,7 @@ class DepartamentoController
     }
 
     @DeleteMapping("delete/{id}")
-    suspend fun delete(@PathVariable id: String): ResponseEntity<Departamento> {
+    suspend fun delete(@PathVariable id: String): ResponseEntity<Empleado> {
         try {
             return ResponseEntity.ok(service.deleteById(id.toLong()))
         } catch (e: Exception) {
