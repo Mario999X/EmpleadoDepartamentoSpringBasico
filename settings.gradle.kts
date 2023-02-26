@@ -1,1 +1,1 @@
-rootProject.name = "mario.empleadodepartamentospring1"
+rootProject.name = "empleadodepartamentospring1"
